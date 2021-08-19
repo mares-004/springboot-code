@@ -43,18 +43,36 @@ COMMENT = 'Tabla de materiales';
 
 
 -- -----------------------------------------------------
+-- Table `sura`.`ordenes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sura`.`ordenes` (
+  `idOrden` INT NOT NULL AUTO_INCREMENT,
+  `estado` VARCHAR(1) NOT NULL,
+  `fecha_entrega` DATETIME NOT NULL,
+  PRIMARY KEY (`idOrden`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
 -- Table `sura`.`parametros`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sura`.`parametros` (
   `idParam` INT NOT NULL AUTO_INCREMENT,
-  `idCons` INT NOT NULL,
-  `cantCE` INT NOT NULL,
-  `cantGR` INT NOT NULL,
-  `cantAR` INT NOT NULL,
-  `cantMA` INT NOT NULL,
-  `cantAD` INT NOT NULL,
-  `nroDias` INT NOT NULL COMMENT 'Número de días en que se demora la construcción',
-  PRIMARY KEY (`idParam`))
+  `idTipo` INT NULL DEFAULT NULL,
+  `idMaterial` INT NULL DEFAULT NULL,
+  `iCantidad` INT NULL DEFAULT NULL,
+  `iDias` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`idParam`),
+  INDEX `idTipo` (`idTipo` ASC) VISIBLE,
+  INDEX `idMaterial` (`idMaterial` ASC) VISIBLE,
+  CONSTRAINT `parametros_ibfk_1`
+    FOREIGN KEY (`idTipo`)
+    REFERENCES `sura`.`construcciones` (`idTipo`),
+  CONSTRAINT `parametros_ibfk_2`
+    FOREIGN KEY (`idMaterial`)
+    REFERENCES `sura`.`materiales` (`idMaterial`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -79,11 +97,20 @@ CREATE TABLE IF NOT EXISTS `sura`.`solicitudes` (
   `idSol` INT NOT NULL AUTO_INCREMENT,
   `idTipo` INT NOT NULL,
   `idRol` INT NOT NULL,
-  `corX` INT NOT NULL,
-  `corY` INT NOT NULL,
-  `estado` VARCHAR(45) NOT NULL,
-  `FECHA_ENTREGA` DATETIME NOT NULL,
-  PRIMARY KEY (`idSol`))
+  `idOrden` INT NULL DEFAULT NULL,
+  `corx` INT NULL DEFAULT NULL,
+  `cory` INT NULL DEFAULT NULL,
+  PRIMARY KEY (`idSol`),
+  INDEX `idOrden` (`idOrden` ASC) VISIBLE,
+  CONSTRAINT `solicitudes_ibfk_1`
+    FOREIGN KEY (`idTipo`)
+    REFERENCES `sura`.`construcciones` (`idTipo`),
+  CONSTRAINT `solicitudes_ibfk_2`
+    FOREIGN KEY (`idRol`)
+    REFERENCES `sura`.`roles` (`idRol`),
+  CONSTRAINT `solicitudes_ibfk_5`
+    FOREIGN KEY (`idOrden`)
+    REFERENCES `sura`.`ordenes` (`idOrden`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
